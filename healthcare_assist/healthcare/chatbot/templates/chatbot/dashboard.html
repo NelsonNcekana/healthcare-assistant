@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthcare Assistant - Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #1f1e1f 0%, #2b2a2b 100%);
+            color: rgb(52, 236, 73);
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .card {
+            background: linear-gradient(145deg, #3a3a3a, #2a2a2a);
+            border: 2px solid rgb(52, 236, 73);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(52, 236, 73, 0.3);
+        }
+        .card-header {
+            background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
+            border-bottom: 2px solid rgb(52, 236, 73);
+            color: rgb(52, 236, 73);
+        }
+        .card-body {
+            background: linear-gradient(145deg, #3a3a3a, #2a2a2a);
+            color: rgb(217, 223, 225);
+        }
+        .btn {
+            background: linear-gradient(135deg, #1f1e1f 0%, #2b2a2b 100%);
+            border: 2px solid rgb(52, 236, 73);
+            color: rgb(52, 236, 73);
+        }
+        .btn:hover {
+            background: rgb(52, 236, 73);
+            color: #1f1e1f;
+        }
+        .stat-card {
+            background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+            border: 2px solid rgb(52, 236, 73);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: rgb(52, 236, 73);
+        }
+        .stat-label {
+            color: rgb(217, 223, 225);
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="text-center mb-4">
+                    <h1 class="text-success">
+                        <i class="fas fa-chart-line"></i> Health Dashboard
+                    </h1>
+                    <p class="text-light">Track your health journey</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Row -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-number">{{ total_logs }}</div>
+                    <div class="stat-label">Health Logs</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-number">{{ total_medications }}</div>
+                    <div class="stat-label">Active Medications</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-number">{{ total_vitals }}</div>
+                    <div class="stat-label">Vital Signs</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-number">
+                        <i class="fas fa-heartbeat fa-2x"></i>
+                    </div>
+                    <div class="stat-label">AI Assistant</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Row -->
+        <div class="row">
+            <!-- Today's Medications -->
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-pills"></i> Today's Medications</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if medication_reminders %}
+                            {% for medication in medication_reminders %}
+                                <div class="d-flex justify-content-between align-items-center mb-2 p-2" 
+                                     style="border: 1px solid rgb(52, 236, 73); border-radius: 10px;">
+                                    <div>
+                                        <strong>{{ medication.medication_name }}</strong><br>
+                                        <small class="text-muted">{{ medication.dosage }} - {{ medication.frequency }}</small>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="badge bg-success">{{ medication.time_of_day|time:"H:i" }}</span>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-muted">No medications scheduled for today.</p>
+                            <p class="text-muted small">Run 'python manage.py create_sample_data' to add sample data.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Health Logs -->
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-notes-medical"></i> Recent Health Logs</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if health_logs %}
+                            {% for log in health_logs %}
+                                <div class="mb-3 p-2" style="border: 1px solid rgb(52, 236, 73); border-radius: 10px;">
+                                    <h6 class="mb-1">{{ log.title }}</h6>
+                                    <p class="mb-1 small">{{ log.description|truncatewords:20 }}</p>
+                                    <small class="text-muted">{{ log.created_at|date:"M d, Y" }}</small>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-muted">No health logs yet.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Vital Signs -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-heartbeat"></i> Recent Vital Signs</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if vital_signs %}
+                            <div class="row">
+                                {% for vital in vital_signs %}
+                                    <div class="col-md-4 mb-3">
+                                        <div class="p-3" style="border: 1px solid rgb(52, 236, 73); border-radius: 10px;">
+                                            <h6 class="text-success">Vital Signs</h6>
+                                            {% if vital.blood_pressure_systolic %}
+                                                <p class="mb-1">BP: {{ vital.blood_pressure_systolic }}/{{ vital.blood_pressure_diastolic }}</p>
+                                            {% endif %}
+                                            {% if vital.heart_rate %}
+                                                <p class="mb-1">HR: {{ vital.heart_rate }} bpm</p>
+                                            {% endif %}
+                                            {% if vital.temperature %}
+                                                <p class="mb-1">Temp: {{ vital.temperature }}°C</p>
+                                            {% endif %}
+                                            {% if vital.weight %}
+                                                <p class="mb-1">Weight: {{ vital.weight }} kg</p>
+                                            {% endif %}
+                                            <small class="text-muted">{{ vital.recorded_at|date:"M d, Y H:i" }}</small>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="text-muted">No vital signs recorded yet.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="row mt-4">
+            <div class="col-12 text-center">
+                <a href="{% url 'chat' %}" class="btn btn-success btn-lg me-3">
+                    <i class="fas fa-comments"></i> Start Chat
+                </a>
+                <button class="btn btn-outline-info btn-lg" onclick="location.reload()">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
