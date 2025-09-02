@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthcare Assistant - Chat</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #1f1e1f 0%, #2b2a2b 100%);
+            color: rgb(52, 236, 73);
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .chat-container {
+            background: linear-gradient(145deg, #3a3a3a, #2a2a2a);
+            border: 2px solid rgb(52, 236, 73);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(52, 236, 73, 0.3);
+        }
+        .chat-box {
+            background: linear-gradient(145deg, #2b2a2b, #1f1e1f);
+            border: 2px solid rgb(52, 236, 73);
+        }
+        .user-message {
+            background: linear-gradient(135deg, #1f1e1f 0%, #2b2a2b 100%);
+            border: 2px solid rgb(52, 236, 73);
+            color: rgb(52, 236, 73);
+        }
+        .ai-message {
+            background: linear-gradient(145deg, #3a3a3a, #2a2a2a);
+            border: 2px solid rgb(52, 236, 73);
+            color: rgb(217, 223, 225);
+        }
+        .form-control {
+            background: #ffffff;
+            border: 2px solid rgb(52, 236, 73);
+            color: #000000;
+        }
+        .btn {
+            background: linear-gradient(135deg, #1f1e1f 0%, #2b2a2b 100%);
+            border: 2px solid rgb(52, 236, 73);
+            color: rgb(52, 236, 73);
+        }
+        .btn:hover {
+            background: rgb(52, 236, 73);
+            color: #1f1e1f;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="chat-container p-4">
+                    <div class="text-center mb-4">
+                        <h1 class="text-success">
+                            <i class="fas fa-heartbeat"></i> Healthcare Assistant
+                        </h1>
+                        <p class="text-light">Your AI-powered health companion</p>
+                    </div>
+                    
+                    <div class="chat-box p-3 mb-3" style="height: 400px; overflow-y: auto;">
+                        {% for message in chat_history %}
+                            <div class="message mb-3">
+                                {% if message.role == 'user' %}
+                                    <div class="user-message p-3 rounded float-end" style="max-width: 80%;">
+                                        <i class="fas fa-user me-2"></i>{{ message.content }}
+                                    </div>
+                                {% else %}
+                                    <div class="ai-message p-3 rounded float-start" style="max-width: 80%;">
+                                        <i class="fas fa-robot me-2"></i>{{ message.content }}
+                                    </div>
+                                {% endif %}
+                                <div class="clearfix"></div>
+                            </div>
+                        {% empty %}
+                            <div class="text-center text-light mt-5">
+                                <i class="fas fa-comments fa-3x mb-3"></i>
+                                <p>Start chatting with your healthcare assistant!</p>
+                                <p class="small">Ask about symptoms, medications, or general health questions.</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <form method="post" class="d-flex gap-2">
+                        {% csrf_token %}
+                        <input type="text" name="user_message" class="form-control" 
+                               placeholder="Ask me about your health..." required>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-paper-plane"></i> Send
+                        </button>
+                    </form>
+                    
+                    <div class="text-center mt-3">
+                        <form method="post" action="{% url 'clear_chat' %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                                <i class="fas fa-trash"></i> Clear Chat
+                            </button>
+                        </form>
+                        <a href="{% url 'dashboard' %}" class="btn btn-outline-info btn-sm ms-2">
+                            <i class="fas fa-chart-line"></i> Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Auto-scroll to bottom of chat
+        const chatBox = document.querySelector('.chat-box');
+        chatBox.scrollTop = chatBox.scrollHeight;
+        
+        // Focus on input field
+        document.querySelector('input[name="user_message"]').focus();
+    </script>
+</body>
+</html>
